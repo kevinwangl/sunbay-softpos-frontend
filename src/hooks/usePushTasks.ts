@@ -25,8 +25,9 @@ export const usePushTaskDetail = (id: string) => {
     queryKey: ['push-task', id],
     queryFn: () => distributionApi.getPushTaskDetail(id),
     enabled: !!id,
-    refetchInterval: (data) => {
+    refetchInterval: (query) => {
       // 如果任务还在运行中，每10秒刷新一次
+      const data = query.state.data;
       if (data?.task?.status === 'RUNNING' || data?.task?.status === 'PENDING') {
         return 10000;
       }

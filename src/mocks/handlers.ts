@@ -18,17 +18,6 @@ const baseURL = import.meta.env.VITE_API_BASE_URL || '/api';
 console.log('MSW: Base URL is', baseURL);
 console.log('MSW: Handlers initialized');
 
-// Token验证辅助函数
-const validateToken = (request: Request): boolean => {
-  const authHeader = request.headers.get('Authorization');
-  if (!authHeader || !authHeader.startsWith('Bearer ')) {
-    return false;
-  }
-  const token = authHeader.substring(7);
-  // 简单验证：检查token是否存在且不为空
-  return token && token.length > 0;
-};
-
 export const handlers = [
   // 登录
   http.post(`${baseURL}/auth/login`, async ({ request }) => {

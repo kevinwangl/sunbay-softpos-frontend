@@ -4,7 +4,6 @@ import {
   getDeviceKeyStatus,
   updateDeviceKey,
   getKeyWarningDevices,
-  type KeyStatus,
   type KeyUpdateRequest,
   type KeyUpdateResponse,
 } from '@/api/keys';

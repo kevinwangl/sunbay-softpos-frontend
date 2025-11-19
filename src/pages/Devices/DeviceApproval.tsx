@@ -2,7 +2,6 @@ import { useState } from 'react';
 import { Card, Button, Modal, Form, Input, Tag, Descriptions } from 'antd';
 import { CheckCircleOutlined, CloseCircleOutlined, EyeOutlined } from '@ant-design/icons';
 import { DataTable } from '@/components/common/DataTable';
-import { StatusBadge } from '@/components/common/StatusBadge';
 import { SecurityScore } from '@/components/common/SecurityScore';
 import { useDevices, useApproveDevice } from '@/hooks/useDevices';
 import { Device } from '@/types';

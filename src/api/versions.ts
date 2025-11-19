@@ -7,9 +7,6 @@ import type {
   VersionFilters,
   CreateSDKVersionRequest,
   UpdateSDKVersionRequest,
-  VersionStatistics,
-  CompatibilityMatrixItem,
-  DeviceSDKVersion,
 } from '../types/version';
 import type {
   GetSDKVersionsResponse,

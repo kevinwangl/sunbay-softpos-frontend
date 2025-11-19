@@ -1,4 +1,4 @@
-import { Row, Col, Card, Statistic, Table, Tag, Spin } from 'antd';
+import { Row, Col, Card, Statistic, Table, Spin } from 'antd';
 import {
   MobileOutlined,
   CheckCircleOutlined,
