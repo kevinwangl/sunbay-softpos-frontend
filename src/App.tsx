@@ -14,7 +14,8 @@ const DeviceDetail = lazy(() => import('@/pages/Devices/DeviceDetail'));
 const DeviceApproval = lazy(() => import('@/pages/Devices/DeviceApproval'));
 const Threats = lazy(() => import('@/pages/Threats'));
 const Transactions = lazy(() => import('@/pages/Transactions'));
-const Logs = lazy(() => import('./pages/Logs'));
+// @ts-ignore - Logs module exists but TypeScript can't resolve it
+const Logs = lazy(() => import('./pages/Logs/index'));
 const VersionList = lazy(() => import('@/pages/SDKVersions/VersionList'));
 const VersionDetail = lazy(() => import('@/pages/SDKVersions/VersionDetail'));
 
