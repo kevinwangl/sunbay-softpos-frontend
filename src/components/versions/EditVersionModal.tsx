@@ -1,6 +1,6 @@
 import { Modal, Form, Radio, Input, message } from 'antd';
 import { useEffect } from 'react';
-import { SDKVersion } from '@/types';
+import { SDKVersion } from '@/types/version';
 import { useUpdateSDKVersion } from '@/hooks/useSDKVersions';
 
 interface EditVersionModalProps {

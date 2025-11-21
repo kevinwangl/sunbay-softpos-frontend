@@ -1,6 +1,6 @@
 # Bug 修复报告
 
-## 问题描述
+## 问题1：缺少 LineChart 组件
 
 **错误信息：**
 ```
@@ -11,7 +11,7 @@ Failed to resolve import "@/components/charts/LineChart" from
 **原因：**
 在创建 `HealthCheckHistory` 组件时引用了 `LineChart` 组件，但该组件尚未创建。
 
-## 解决方案
+## 解决方案1
 
 ### ✅ 已修复
 
@@ -75,18 +75,53 @@ npm run dev
 - ✅ `src/components/charts/BarChart.tsx` - 已存在
 - ✅ `src/components/devices/HealthCheckHistory.tsx` - 使用 LineChart
 
+## 问题2：类型导入错误
+
+**错误信息：**
+```
+src/components/versions/EditVersionModal.tsx(3,10): error TS2305: 
+Module '"@/types"' has no exported member 'SDKVersion'.
+```
+
+**原因：**
+`EditVersionModal` 组件从 `@/types` 导入 `SDKVersion`，但该类型定义在 `@/types/version` 中。
+
+## 解决方案2
+
+### ✅ 已修复
+
+修正了 `EditVersionModal.tsx` 中的导入路径：
+
+**修改前：**
+```typescript
+import { SDKVersion } from '@/types';
+```
+
+**修改后：**
+```typescript
+import { SDKVersion } from '@/types/version';
+```
+
 ## 状态
 
-- **Bug 状态：** ✅ 已修复
+- **Bug 1 状态：** ✅ 已修复（LineChart 组件）
+- **Bug 2 状态：** ✅ 已修复（类型导入）
 - **测试状态：** ⏳ 待测试（需要重启服务器）
-- **影响范围：** 健康检查功能
-- **优先级：** 高（阻塞功能）
+- **影响范围：** 健康检查功能 + SDK版本编辑功能
+- **优先级：** 高（阻塞构建）
 
 ## 总结
+
+所有 Bug 已修复：
+1. ✅ 创建了缺失的 LineChart 组件
+2. ✅ 修正了 EditVersionModal 的类型导入路径
 
 所有必需的图表组件现已完整：
 - ✅ PieChart - 饼图
 - ✅ BarChart - 柱状图
 - ✅ LineChart - 折线图（新增）
 
-重启开发服务器后，所有功能应该正常工作。
+所有类型导入路径正确：
+- ✅ EditVersionModal 使用正确的导入路径
+
+重启开发服务器后，所有功能应该正常工作，构建应该成功。
