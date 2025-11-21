@@ -14,11 +14,13 @@ import {
   PauseCircleOutlined,
   PlayCircleOutlined,
   StopOutlined,
+  ReloadOutlined,
 } from '@ant-design/icons';
 import { useState } from 'react';
 import { StatusBadge } from '@/components/common/StatusBadge';
 import KeyManagement from '@/components/devices/KeyManagement';
 import SecurityScoreDetail from '@/components/devices/SecurityScoreDetail';
+import HealthCheckHistory from '@/components/devices/HealthCheckHistory';
 import {
   useDeviceDetail,
   useSuspendDevice,
@@ -33,7 +35,7 @@ const DeviceDetail = () => {
   const [suspendModalVisible, setSuspendModalVisible] = useState(false);
   const [form] = Form.useForm();
 
-  const { data, isLoading } = useDeviceDetail(id!);
+  const { data, isLoading, refetch } = useDeviceDetail(id!);
   const { mutate: suspendDevice, isPending: isSuspending } = useSuspendDevice();
   const { mutate: resumeDevice, isPending: isResuming } = useResumeDevice();
   const { mutate: revokeDevice, isPending: isRevoking } = useRevokeDevice();
@@ -86,13 +88,20 @@ const DeviceDetail = () => {
 
   return (
     <div>
-      <Button
-        icon={<ArrowLeftOutlined />}
-        onClick={() => navigate('/devices')}
-        style={{ marginBottom: 16 }}
-      >
-        返回列表
-      </Button>
+      <Space style={{ marginBottom: 16 }}>
+        <Button
+          icon={<ArrowLeftOutlined />}
+          onClick={() => navigate('/devices')}
+        >
+          返回列表
+        </Button>
+        <Button
+          icon={<ReloadOutlined />}
+          onClick={() => refetch()}
+        >
+          刷新
+        </Button>
+      </Space>
 
       {/* 基本信息 */}
       <Card
@@ -165,6 +174,9 @@ const DeviceDetail = () => {
 
       {/* 密钥管理 */}
       <KeyManagement deviceId={device.id} />
+
+      {/* 健康检查记录 */}
+      <HealthCheckHistory deviceId={device.id} />
 
       {/* 暂停设备对话框 */}
       <Modal

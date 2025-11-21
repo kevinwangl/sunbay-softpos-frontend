@@ -1,80 +1,45 @@
 import { useState } from 'react';
-import { Card, Table, Tag, Space, Select, DatePicker, Input, Button } from 'antd';
-import { SearchOutlined, ReloadOutlined, DownloadOutlined } from '@ant-design/icons';
+import { Card, Table, Tag, Space, Select, DatePicker, Input, Button, Modal, Descriptions } from 'antd';
+import { SearchOutlined, ReloadOutlined, DownloadOutlined, EyeOutlined } from '@ant-design/icons';
 import type { ColumnsType } from 'antd/es/table';
-import type { AuditLog } from '@/types';
+import type { AuditLog, AuditLogFilters } from '@/types';
+import { useAuditLogs, useExportLogs } from '@/hooks/useLogs';
+import { PAGINATION } from '@/utils/constants';
+import type { Dayjs } from 'dayjs';
 
 const { RangePicker } = DatePicker;
 
-// Mock数据 - 实际应该从API获取
-const mockLogs: AuditLog[] = [
-  {
-    id: 'log-001',
-    userId: '1',
-    username: 'admin',
-    action: '设备审批',
-    resource: 'device',
-    resourceId: 'device-003',
-    ipAddress: '192.168.1.100',
-    timestamp: '2024-11-17T09:00:00Z',
-    details: { action: 'approve', deviceId: 'device-003' },
-    result: 'SUCCESS',
-  },
-  {
-    id: 'log-002',
-    userId: '1',
-    username: 'admin',
-    action: '设备暂停',
-    resource: 'device',
-    resourceId: 'device-006',
-    ipAddress: '192.168.1.100',
-    timestamp: '2024-11-16T14:30:00Z',
-    details: { action: 'suspend', reason: '安全评分过低' },
-    result: 'SUCCESS',
-  },
-  {
-    id: 'log-003',
-    userId: '1',
-    username: 'admin',
-    action: '威胁处理',
-    resource: 'threat',
-    resourceId: 'threat-002',
-    ipAddress: '192.168.1.100',
-    timestamp: '2024-11-16T09:00:00Z',
-    details: { action: 'resolve', notes: '已通知商户卸载Xposed框架' },
-    result: 'SUCCESS',
-  },
-  {
-    id: 'log-004',
-    userId: '1',
-    username: 'admin',
-    action: '登录',
-    resource: 'auth',
-    resourceId: '1',
-    ipAddress: '192.168.1.100',
-    timestamp: '2024-11-17T08:00:00Z',
-    details: { method: 'password' },
-    result: 'SUCCESS',
-  },
-  {
-    id: 'log-005',
-    userId: '2',
-    username: 'operator',
-    action: '登录失败',
-    resource: 'auth',
-    resourceId: '2',
-    ipAddress: '192.168.1.105',
-    timestamp: '2024-11-17T07:45:00Z',
-    details: { method: 'password', reason: '密码错误' },
-    result: 'FAILED',
-  },
-];
-
 const Logs = () => {
-  const [loading] = useState(false);
+  const [filters, setFilters] = useState<AuditLogFilters>({
+    page: 1,
+    pageSize: PAGINATION.DEFAULT_PAGE_SIZE,
+  });
   const [searchText, setSearchText] = useState('');
-  const [actionFilter, setActionFilter] = useState<string | undefined>();
-  const [resultFilter, setResultFilter] = useState<string | undefined>();
+  const [dateRange, setDateRange] = useState<[Dayjs | null, Dayjs | null]>([null, null]);
+  const [selectedLog, setSelectedLog] = useState<AuditLog | null>(null);
+  const [detailModalVisible, setDetailModalVisible] = useState(false);
+
+  const { data, isLoading, refetch } = useAuditLogs(filters);
+  const { mutate: exportLogs, isPending: isExporting } = useExportLogs();
+
+  const handleSearch = () => {
+    setFilters({
+      ...filters,
+      userId: searchText || undefined,
+      startDate: dateRange[0]?.toISOString(),
+      endDate: dateRange[1]?.toISOString(),
+      page: 1,
+    });
+  };
+
+  const handleViewDetail = (log: AuditLog) => {
+    setSelectedLog(log);
+    setDetailModalVisible(true);
+  };
+
+  const handleExport = () => {
+    exportLogs(filters);
+  };
 
   const columns: ColumnsType<AuditLog> = [
     {
@@ -83,7 +48,6 @@ const Logs = () => {
       key: 'timestamp',
       width: 180,
       render: (timestamp) => new Date(timestamp).toLocaleString('zh-CN'),
-      sorter: (a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime(),
     },
     {
       title: '用户',
@@ -108,6 +72,7 @@ const Logs = () => {
           threat: { text: '威胁', color: 'orange' },
           transaction: { text: '交易', color: 'green' },
           auth: { text: '认证', color: 'purple' },
+          version: { text: 'SDK版本', color: 'cyan' },
         };
         const info = resourceMap[resource] || { text: resource, color: 'default' };
         return <Tag color={info.color}>{info.text}</Tag>;
@@ -118,6 +83,7 @@ const Logs = () => {
       dataIndex: 'resourceId',
       key: 'resourceId',
       width: 150,
+      ellipsis: true,
     },
     {
       title: 'IP地址',
@@ -137,32 +103,22 @@ const Logs = () => {
       ),
     },
     {
-      title: '详情',
-      dataIndex: 'details',
-      key: 'details',
-      ellipsis: true,
-      render: (details) => JSON.stringify(details),
+      title: '操作',
+      key: 'actions',
+      width: 100,
+      render: (_, record) => (
+        <Button
+          type="link"
+          icon={<EyeOutlined />}
+          onClick={() => handleViewDetail(record)}
+        >
+          详情
+        </Button>
+      ),
     },
   ];
 
-  // 过滤数据
-  const filteredData = mockLogs.filter((log) => {
-    if (searchText && !log.username.includes(searchText) && !log.action.includes(searchText)) {
-      return false;
-    }
-    if (actionFilter && log.action !== actionFilter) {
-      return false;
-    }
-    if (resultFilter && log.result !== resultFilter) {
-      return false;
-    }
-    return true;
-  });
 
-  const handleExport = () => {
-    // 导出功能 - 实际应该调用API
-    console.log('导出日志');
-  };
 
   return (
     <div>
@@ -170,8 +126,14 @@ const Logs = () => {
         title="系统日志"
         extra={
           <Space>
-            <Button icon={<ReloadOutlined />}>刷新</Button>
-            <Button icon={<DownloadOutlined />} onClick={handleExport}>
+            <Button icon={<ReloadOutlined />} onClick={() => refetch()}>
+              刷新
+            </Button>
+            <Button
+              icon={<DownloadOutlined />}
+              onClick={handleExport}
+              loading={isExporting}
+            >
               导出
             </Button>
           </Space>
@@ -180,55 +142,109 @@ const Logs = () => {
       >
         <Space wrap style={{ marginBottom: 16 }}>
           <Input
-            placeholder="搜索用户或操作"
+            placeholder="搜索用户ID或用户名"
             prefix={<SearchOutlined />}
             value={searchText}
             onChange={(e) => setSearchText(e.target.value)}
+            onPressEnter={handleSearch}
             style={{ width: 200 }}
             allowClear
           />
           <Select
             placeholder="操作类型"
             style={{ width: 150 }}
-            value={actionFilter}
-            onChange={setActionFilter}
+            value={filters.action}
+            onChange={(value) => setFilters({ ...filters, action: value, page: 1 })}
             allowClear
           >
-            <Select.Option value="登录">登录</Select.Option>
-            <Select.Option value="登录失败">登录失败</Select.Option>
-            <Select.Option value="设备审批">设备审批</Select.Option>
-            <Select.Option value="设备暂停">设备暂停</Select.Option>
-            <Select.Option value="设备恢复">设备恢复</Select.Option>
-            <Select.Option value="设备吊销">设备吊销</Select.Option>
-            <Select.Option value="威胁处理">威胁处理</Select.Option>
+            <Select.Option value="login">登录</Select.Option>
+            <Select.Option value="logout">登出</Select.Option>
+            <Select.Option value="device_approve">设备审批</Select.Option>
+            <Select.Option value="device_suspend">设备暂停</Select.Option>
+            <Select.Option value="device_resume">设备恢复</Select.Option>
+            <Select.Option value="device_revoke">设备吊销</Select.Option>
+            <Select.Option value="threat_resolve">威胁处理</Select.Option>
+            <Select.Option value="version_create">版本创建</Select.Option>
+            <Select.Option value="version_update">版本更新</Select.Option>
           </Select>
-          <Select
-            placeholder="结果"
-            style={{ width: 120 }}
-            value={resultFilter}
-            onChange={setResultFilter}
-            allowClear
-          >
-            <Select.Option value="SUCCESS">成功</Select.Option>
-            <Select.Option value="FAILED">失败</Select.Option>
-          </Select>
-          <RangePicker placeholder={['开始时间', '结束时间']} />
+          <RangePicker
+            placeholder={['开始时间', '结束时间']}
+            value={dateRange}
+            onChange={(dates) => setDateRange(dates as [Dayjs | null, Dayjs | null])}
+          />
+          <Button type="primary" icon={<SearchOutlined />} onClick={handleSearch}>
+            搜索
+          </Button>
         </Space>
 
         <Table
           columns={columns}
-          dataSource={filteredData}
+          dataSource={data?.items || []}
           rowKey="id"
-          loading={loading}
+          loading={isLoading}
           pagination={{
-            total: filteredData.length,
-            pageSize: 20,
+            current: filters.page,
+            pageSize: filters.pageSize,
+            total: data?.total || 0,
             showSizeChanger: true,
             showTotal: (total) => `共 ${total} 条记录`,
+            onChange: (page, pageSize) => {
+              setFilters({ ...filters, page, pageSize });
+            },
           }}
           scroll={{ x: 1200 }}
         />
       </Card>
+
+      {/* 详情对话框 */}
+      <Modal
+        title="日志详情"
+        open={detailModalVisible}
+        onCancel={() => setDetailModalVisible(false)}
+        footer={null}
+        width={800}
+      >
+        {selectedLog && (
+          <div>
+            <Descriptions column={2} bordered>
+              <Descriptions.Item label="日志ID" span={2}>
+                {selectedLog.id}
+              </Descriptions.Item>
+              <Descriptions.Item label="用户ID">
+                {selectedLog.userId}
+              </Descriptions.Item>
+              <Descriptions.Item label="用户名">
+                {selectedLog.username}
+              </Descriptions.Item>
+              <Descriptions.Item label="操作">
+                {selectedLog.action}
+              </Descriptions.Item>
+              <Descriptions.Item label="资源类型">
+                {selectedLog.resource}
+              </Descriptions.Item>
+              <Descriptions.Item label="资源ID" span={2}>
+                {selectedLog.resourceId}
+              </Descriptions.Item>
+              <Descriptions.Item label="IP地址">
+                {selectedLog.ipAddress}
+              </Descriptions.Item>
+              <Descriptions.Item label="时间">
+                {new Date(selectedLog.timestamp).toLocaleString('zh-CN')}
+              </Descriptions.Item>
+              <Descriptions.Item label="结果" span={2}>
+                <Tag color={selectedLog.result === 'SUCCESS' ? 'success' : 'error'}>
+                  {selectedLog.result === 'SUCCESS' ? '成功' : '失败'}
+                </Tag>
+              </Descriptions.Item>
+              <Descriptions.Item label="详细信息" span={2}>
+                <pre style={{ margin: 0, whiteSpace: 'pre-wrap' }}>
+                  {JSON.stringify(selectedLog.details, null, 2)}
+                </pre>
+              </Descriptions.Item>
+            </Descriptions>
+          </div>
+        )}
+      </Modal>
     </div>
   );
 };

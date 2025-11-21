@@ -1,10 +1,11 @@
 import { useState } from 'react';
 import { Card, Button, Table, Tag, Space, Select } from 'antd';
-import { PlusOutlined, ReloadOutlined } from '@ant-design/icons';
+import { PlusOutlined, ReloadOutlined, EditOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import { useSDKVersions } from '@/hooks/useSDKVersions';
 import { getVersionStatusDisplay, getUpdateTypeDisplay, formatFileSize } from '@/utils/versionUtils';
 import CreateVersionModal from '@/components/versions/CreateVersionModal';
+import EditVersionModal from '@/components/versions/EditVersionModal';
 import type { VersionFilters } from '@/types/version';
 import type { ColumnsType } from 'antd/es/table';
 import type { SDKVersion } from '@/types/version';
@@ -20,6 +21,8 @@ const VersionList = () => {
     sortOrder: 'desc',
   });
   const [createModalVisible, setCreateModalVisible] = useState(false);
+  const [editModalVisible, setEditModalVisible] = useState(false);
+  const [selectedVersion, setSelectedVersion] = useState<SDKVersion | null>(null);
 
   const { data, isLoading, refetch } = useSDKVersions(filters);
 
@@ -97,11 +100,23 @@ const VersionList = () => {
       title: '操作',
       key: 'action',
       fixed: 'right',
-      width: 100,
+      width: 150,
       render: (_, record) => (
-        <Button type="link" onClick={() => navigate(`/sdk-versions/${record.id}`)}>
-          查看详情
-        </Button>
+        <Space>
+          <Button
+            type="link"
+            icon={<EditOutlined />}
+            onClick={() => {
+              setSelectedVersion(record);
+              setEditModalVisible(true);
+            }}
+          >
+            编辑
+          </Button>
+          <Button type="link" onClick={() => navigate(`/sdk-versions/${record.id}`)}>
+            详情
+          </Button>
+        </Space>
       ),
     },
   ];
@@ -196,6 +211,15 @@ const VersionList = () => {
       <CreateVersionModal
         visible={createModalVisible}
         onClose={() => setCreateModalVisible(false)}
+      />
+
+      <EditVersionModal
+        visible={editModalVisible}
+        version={selectedVersion}
+        onClose={() => {
+          setEditModalVisible(false);
+          setSelectedVersion(null);
+        }}
       />
     </div>
   );

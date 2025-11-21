@@ -26,6 +26,10 @@ export const API_PATHS = {
   DASHBOARD: {
     HEALTH_OVERVIEW: '/dashboard/health-overview',
   },
+  HEALTH: {
+    OVERVIEW: '/dashboard/health-overview',
+    DETAIL: (id: string) => `/health-checks/${id}`,
+  },
   THREATS: {
     LIST: '/threats',
     DETAIL: (id: string) => `/threats/${id}`,
