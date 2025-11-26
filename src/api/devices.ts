@@ -6,6 +6,7 @@ import {
   PaginatedResponse,
   ApiResponse,
   ApproveDeviceRequest,
+  RejectDeviceRequest,
   DeviceOperationRequest,
   HealthCheck,
 } from '@/types';
@@ -88,7 +89,19 @@ export const devicesApi = {
 
   // 审批设备
   approveDevice: async (id: string, data: ApproveDeviceRequest): Promise<void> => {
-    await apiClient.post(API_PATHS.DEVICES.APPROVE(id), data);
+    await apiClient.post(API_PATHS.DEVICES.APPROVE(id), {
+      device_id: id,
+      operator: data.operator
+    });
+  },
+
+  // 拒绝设备
+  rejectDevice: async (id: string, data: RejectDeviceRequest): Promise<void> => {
+    await apiClient.post(API_PATHS.DEVICES.REJECT(id), {
+      device_id: id,
+      operator: data.operator,
+      reason: data.reason
+    });
   },
 
   // 暂停设备

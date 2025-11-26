@@ -16,6 +16,7 @@ export const API_PATHS = {
     LIST: '/devices',
     DETAIL: (id: string) => `/devices/${id}`,
     APPROVE: (id: string) => `/devices/${id}/approve`,
+    REJECT: (id: string) => `/devices/${id}/reject`,
     SUSPEND: (id: string) => `/devices/${id}/suspend`,
     RESUME: (id: string) => `/devices/${id}/resume`,
     REVOKE: (id: string) => `/devices/${id}/revoke`,

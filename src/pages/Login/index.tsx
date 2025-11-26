@@ -237,7 +237,7 @@ const Login = () => {
             }}
           >
             <Text type="secondary" style={{ fontSize: 12 }}>
-              演示账号：admin@sunbay.com / admin123
+              演示账号：admin / admin123
             </Text>
           </div>
         </div>

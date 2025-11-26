@@ -4,6 +4,7 @@ import { devicesApi } from '@/api/devices';
 import {
   DeviceFilters,
   ApproveDeviceRequest,
+  RejectDeviceRequest,
   DeviceOperationRequest,
 } from '@/types';
 import { handleApiError } from '@/utils/errorHandler';
@@ -48,6 +49,23 @@ export const useApproveDevice = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['devices'] });
       message.success('设备审批成功');
+    },
+    onError: (error) => {
+      message.error(handleApiError(error));
+    },
+  });
+};
+
+// 拒绝设备
+export const useRejectDevice = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({ id, data }: { id: string; data: RejectDeviceRequest }) =>
+      devicesApi.rejectDevice(id, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['devices'] });
+      message.success('设备已拒绝');
     },
     onError: (error) => {
       message.error(handleApiError(error));

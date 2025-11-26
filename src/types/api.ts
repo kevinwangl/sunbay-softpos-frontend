@@ -19,13 +19,15 @@ export interface LoginRequest {
 }
 
 export interface LoginResponse {
-  token: string;
-  refreshToken: string;
+  token: string;  // 后端返回 access_token，通过 serde rename 为 token
+  refreshToken: string;  // 后端返回 refresh_token，通过 camelCase 转换为 refreshToken
+  tokenType: string;
+  expiresIn: number;
   user: User;
 }
 
 export interface User {
-  id: string;
+  id: string;  // 后端返回 user_id，通过 serde rename 为 id
   username: string;
   role: string;
   email?: string;
@@ -40,8 +42,14 @@ export interface RefreshTokenResponse {
 }
 
 export interface ApproveDeviceRequest {
-  approved: boolean;
-  reason?: string;
+  device_id: string;
+  operator: string;
+}
+
+export interface RejectDeviceRequest {
+  device_id: string;
+  operator: string;
+  reason: string;
 }
 
 export interface DeviceOperationRequest {

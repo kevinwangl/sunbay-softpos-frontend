@@ -3,7 +3,7 @@ import { Card, Button, Modal, Form, Input, Tag, Descriptions } from 'antd';
 import { CheckCircleOutlined, CloseCircleOutlined, EyeOutlined } from '@ant-design/icons';
 import { DataTable } from '@/components/common/DataTable';
 import { SecurityScore } from '@/components/common/SecurityScore';
-import { useDevices, useApproveDevice } from '@/hooks/useDevices';
+import { useDevices, useApproveDevice, useRejectDevice } from '@/hooks/useDevices';
 import { Device } from '@/types';
 import type { ColumnsType } from 'antd/es/table';
 
@@ -16,12 +16,13 @@ const DeviceApproval = () => {
 
   const { data, isLoading, refetch } = useDevices({ status: 'PENDING', page: 1, pageSize: 20 });
   const { mutate: approveDevice, isPending } = useApproveDevice();
+  const { mutate: rejectDevice, isPending: isRejecting } = useRejectDevice();
 
   const handleApprove = () => {
     if (!selectedDevice) return;
 
     approveDevice(
-      { id: selectedDevice.id, data: { approved: true } },
+      { id: selectedDevice.id, data: { device_id: selectedDevice.id, operator: 'admin_001' } },
       {
         onSuccess: () => {
           setApproveModalVisible(false);
@@ -36,8 +37,15 @@ const DeviceApproval = () => {
     if (!selectedDevice) return;
 
     form.validateFields().then((values) => {
-      approveDevice(
-        { id: selectedDevice.id, data: { approved: false, reason: values.reason } },
+      rejectDevice(
+        {
+          id: selectedDevice.id,
+          data: {
+            device_id: selectedDevice.id,
+            operator: 'admin_001',
+            reason: values.reason
+          }
+        },
         {
           onSuccess: () => {
             setRejectModalVisible(false);
@@ -253,7 +261,7 @@ const DeviceApproval = () => {
           setSelectedDevice(null);
           form.resetFields();
         }}
-        confirmLoading={isPending}
+        confirmLoading={isRejecting}
         okButtonProps={{ danger: true }}
       >
         {selectedDevice && (
