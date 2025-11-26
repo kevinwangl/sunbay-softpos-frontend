@@ -1,5 +1,5 @@
-export type TransactionType = 'SALE' | 'REFUND' | 'QUERY';
-export type TransactionStatus = 'SUCCESS' | 'FAILED' | 'PENDING';
+export type TransactionType = 'PAYMENT' | 'REFUND' | 'VOID' | 'PREAUTH' | 'CAPTURE';
+export type TransactionStatus = 'PENDING' | 'APPROVED' | 'DECLINED' | 'FAILED' | 'VOIDED';
 
 export interface Transaction {
   id: string;

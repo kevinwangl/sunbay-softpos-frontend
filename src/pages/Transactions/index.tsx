@@ -117,9 +117,11 @@ const Transactions = () => {
             onChange={(value) => setFilters((prev) => ({ ...prev, status: value, page: 1 }))}
             allowClear
             options={[
-              { label: '成功', value: 'SUCCESS' },
+              { label: '成功', value: 'APPROVED' },
+              { label: '拒绝', value: 'DECLINED' },
               { label: '失败', value: 'FAILED' },
               { label: '处理中', value: 'PENDING' },
+              { label: '已撤销', value: 'VOIDED' },
             ]}
           />
           <RangePicker

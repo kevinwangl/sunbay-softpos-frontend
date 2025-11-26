@@ -26,13 +26,13 @@ export interface KeyUpdateResponse {
 
 // 获取设备密钥状态
 export const getDeviceKeyStatus = async (deviceId: string): Promise<KeyStatus> => {
-  const response = await apiClient.get(`/devices/${deviceId}/keys/status`);
+  const response = await apiClient.get(`/keys/${deviceId}/status`);
   return response.data;
 };
 
 // 更新设备密钥
 export const updateDeviceKey = async (data: KeyUpdateRequest): Promise<KeyUpdateResponse> => {
-  const response = await apiClient.post(`/devices/${data.deviceId}/keys/update`, data);
+  const response = await apiClient.post(`/keys/${data.deviceId}/update`, data);
   return response.data;
 };
 

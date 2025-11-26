@@ -7,12 +7,15 @@ export interface Device {
   model: string;
   osVersion: string;
   teeType: TEEType;
+  deviceMode: string;
   status: DeviceStatus;
   merchantId: string;
   merchantName: string;
   securityScore: number;
   registeredAt: string;
+  approvedAt: string | null;
   lastActiveAt: string;
+  ksn: string;
   keyInfo: KeyInfo;
 }
 

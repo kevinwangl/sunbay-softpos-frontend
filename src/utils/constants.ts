@@ -20,8 +20,8 @@ export const API_PATHS = {
     RESUME: (id: string) => `/devices/${id}/resume`,
     REVOKE: (id: string) => `/devices/${id}/revoke`,
     HEALTH_CHECKS: (id: string) => `/devices/${id}/health-checks`,
-    KEY_STATUS: (id: string) => `/devices/${id}/keys/status`,
-    KEY_UPDATE: (id: string) => `/devices/${id}/keys/update`,
+    KEY_STATUS: (id: string) => `/keys/${id}/status`,
+    KEY_UPDATE: (id: string) => `/keys/${id}/update`,
   },
   DASHBOARD: {
     HEALTH_OVERVIEW: '/dashboard/health-overview',
@@ -96,23 +96,29 @@ export const THREAT_SEVERITY_COLORS = {
   LOW: 'blue',
 } as const;
 
-// 交易类型
+// 交易类型 - 匹配后端 TransactionType 枚举
 export const TRANSACTION_TYPES = {
-  SALE: '消费',
+  PAYMENT: '消费',
   REFUND: '退款',
-  QUERY: '查询',
+  VOID: '撤销',
+  PREAUTH: '预授权',
+  CAPTURE: '完成',
 } as const;
 
 export const TRANSACTION_STATUS_LABELS = {
-  SUCCESS: '成功',
-  FAILED: '失败',
   PENDING: '处理中',
+  APPROVED: '成功',
+  DECLINED: '拒绝',
+  FAILED: '失败',
+  VOIDED: '已撤销',
 } as const;
 
 export const TRANSACTION_STATUS_COLORS = {
-  SUCCESS: 'green',
-  FAILED: 'red',
   PENDING: 'orange',
+  APPROVED: 'green',
+  DECLINED: 'red',
+  FAILED: 'red',
+  VOIDED: 'gray',
 } as const;
 
 // 刷新间隔（毫秒）

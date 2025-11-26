@@ -13,21 +13,77 @@ import {
 export const devicesApi = {
   // 获取设备列表
   getDevices: async (filters: DeviceFilters): Promise<PaginatedResponse<Device>> => {
-    const response = await apiClient.get<ApiResponse<PaginatedResponse<Device>>>(
+    const response = await apiClient.get<ApiResponse<{ devices: any[]; total: number }>>(
       API_PATHS.DEVICES.LIST,
       { params: filters }
     );
-    return response.data.data;
+
+    // Transform API response (snake_case) to frontend format (camelCase)
+    const apiData = response.data.data;
+    return {
+      items: apiData.devices.map((device: any) => ({
+        id: device.id,
+        merchantId: device.merchant_id || 'default_merchant',
+        merchantName: device.merchant_name || '未分配',
+        imei: device.imei,
+        model: device.model,
+        osVersion: device.os_version,
+        teeType: device.tee_type,
+        deviceMode: device.device_mode,
+        status: device.status,
+        securityScore: device.security_score,
+        ksn: device.ksn,
+        keyInfo: {
+          currentKsn: device.ksn,
+          ipekInjectedAt: device.key_injected_at || device.registered_at,
+          remainingCount: device.key_max_usage - device.key_usage_count,
+          totalCount: device.key_max_usage,
+        },
+        registeredAt: device.registered_at,
+        approvedAt: device.approved_at,
+        lastActiveAt: device.registered_at, // Use registered_at as fallback for now
+      })),
+      total: apiData.total,
+      page: filters.page || 1,
+      pageSize: filters.pageSize || 20,
+    };
   },
 
   // 获取设备详情
   getDeviceById: async (
     id: string
   ): Promise<{ device: Device; recentHealthChecks: HealthCheck[] }> => {
-    const response = await apiClient.get<
-      ApiResponse<{ device: Device; recentHealthChecks: HealthCheck[] }>
-    >(API_PATHS.DEVICES.DETAIL(id));
-    return response.data.data;
+    const response = await apiClient.get<any>(API_PATHS.DEVICES.DETAIL(id));
+
+    // Transform API response (snake_case) to frontend format (camelCase)
+    const apiDevice = response.data;
+    const device: Device = {
+      id: apiDevice.id,
+      merchantId: apiDevice.merchant_id || 'default_merchant',
+      merchantName: apiDevice.merchant_name || '未分配',
+      imei: apiDevice.imei,
+      model: apiDevice.model,
+      osVersion: apiDevice.os_version,
+      teeType: apiDevice.tee_type,
+      deviceMode: apiDevice.device_mode,
+      status: apiDevice.status,
+      securityScore: apiDevice.security_score,
+      ksn: apiDevice.ksn,
+      keyInfo: {
+        currentKsn: apiDevice.ksn,
+        ipekInjectedAt: apiDevice.key_injected_at || apiDevice.registered_at,
+        remainingCount: apiDevice.key_max_usage - apiDevice.key_usage_count,
+        totalCount: apiDevice.key_max_usage,
+      },
+      registeredAt: apiDevice.registered_at,
+      approvedAt: apiDevice.approved_at,
+      lastActiveAt: apiDevice.registered_at, // Use registered_at as fallback for now
+    };
+
+    return {
+      device,
+      recentHealthChecks: [], // Backend doesn't return health checks yet
+    };
   },
 
   // 审批设备
