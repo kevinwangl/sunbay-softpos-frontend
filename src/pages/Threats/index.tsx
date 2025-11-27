@@ -1,8 +1,9 @@
 import { useState } from 'react';
-import { Card, Select, Button, Space, Tag, Modal, Form, Input } from 'antd';
+import { Card, Select, Button, Space, Tag, Modal, Form, Input, Descriptions, Spin } from 'antd';
 import { ReloadOutlined, CheckCircleOutlined } from '@ant-design/icons';
 import { DataTable } from '@/components/common/DataTable';
 import { useThreats, useResolveThreat } from '@/hooks/useThreats';
+import { useDeviceDetail } from '@/hooks/useDevices';
 import { ThreatEvent, ThreatFilters } from '@/types';
 import {
   THREAT_TYPES,
@@ -10,6 +11,61 @@ import {
   THREAT_SEVERITY_COLORS,
 } from '@/utils/constants';
 import type { ColumnsType } from 'antd/es/table';
+
+// Separate component for the modal content to use hooks
+const ThreatDetailContent = ({ threat }: { threat: ThreatEvent }) => {
+  const { data: deviceData, isLoading: isDeviceLoading } = useDeviceDetail(threat.deviceId);
+  const device = deviceData?.device;
+
+  return (
+    <div style={{ marginBottom: 24 }}>
+      <Descriptions title="事件详情" bordered column={1} size="small">
+        <Descriptions.Item label="事件ID">{threat.id}</Descriptions.Item>
+        <Descriptions.Item label="威胁类型">
+          {THREAT_TYPES[threat.type as keyof typeof THREAT_TYPES] || threat.type}
+        </Descriptions.Item>
+        <Descriptions.Item label="严重级别">
+          <Tag color={THREAT_SEVERITY_COLORS[threat.severity as keyof typeof THREAT_SEVERITY_COLORS]}>
+            {THREAT_SEVERITY_LABELS[threat.severity as keyof typeof THREAT_SEVERITY_LABELS]}
+          </Tag>
+        </Descriptions.Item>
+        <Descriptions.Item label="检测时间">
+          {new Date(threat.detectedAt).toLocaleString('zh-CN')}
+        </Descriptions.Item>
+        <Descriptions.Item label="描述">{threat.description}</Descriptions.Item>
+      </Descriptions>
+
+      <div style={{ marginTop: 16 }}>
+        <Descriptions title="设备信息" bordered column={1} size="small">
+          <Descriptions.Item label="设备ID">{threat.deviceId}</Descriptions.Item>
+          {isDeviceLoading ? (
+            <Descriptions.Item label="加载中"><Spin size="small" /></Descriptions.Item>
+          ) : device ? (
+            <>
+              <Descriptions.Item label="设备型号">{device.model}</Descriptions.Item>
+              <Descriptions.Item label="IMEI">{device.imei}</Descriptions.Item>
+              <Descriptions.Item label="商户">{device.merchantName}</Descriptions.Item>
+            </>
+          ) : (
+            <Descriptions.Item label="信息">无法获取设备信息</Descriptions.Item>
+          )}
+        </Descriptions>
+      </div>
+
+      {threat.status === 'RESOLVED' && threat.resolution && (
+        <div style={{ marginTop: 16 }}>
+          <Descriptions title="处理记录" bordered column={1} size="small">
+            <Descriptions.Item label="处理人">{threat.resolution.resolvedBy}</Descriptions.Item>
+            <Descriptions.Item label="处理时间">
+              {new Date(threat.resolution.resolvedAt).toLocaleString('zh-CN')}
+            </Descriptions.Item>
+            <Descriptions.Item label="处理备注">{threat.resolution.notes}</Descriptions.Item>
+          </Descriptions>
+        </div>
+      )}
+    </div>
+  );
+};
 
 const Threats = () => {
   const [filters, setFilters] = useState<ThreatFilters>({
@@ -58,7 +114,7 @@ const Threats = () => {
       dataIndex: 'type',
       key: 'type',
       width: 120,
-      render: (type) => THREAT_TYPES[type as keyof typeof THREAT_TYPES],
+      render: (type) => THREAT_TYPES[type as keyof typeof THREAT_TYPES] || type,
     },
     {
       title: '严重级别',
@@ -79,8 +135,8 @@ const Threats = () => {
       key: 'status',
       width: 100,
       render: (status) => (
-        <Tag color={status === 'PENDING' ? 'orange' : 'green'}>
-          {status === 'PENDING' ? '待处理' : '已处理'}
+        <Tag color={status === 'ACTIVE' ? 'orange' : 'green'}>
+          {status === 'ACTIVE' ? '待处理' : '已处理'}
         </Tag>
       ),
     },
@@ -103,7 +159,7 @@ const Threats = () => {
       width: 120,
       fixed: 'right',
       render: (_, record) =>
-        record.status === 'PENDING' ? (
+        record.status === 'ACTIVE' ? (
           <Button
             type="link"
             icon={<CheckCircleOutlined />}
@@ -115,7 +171,19 @@ const Threats = () => {
             处理
           </Button>
         ) : (
-          <span style={{ color: '#52c41a' }}>已处理</span>
+          <Space>
+            <span style={{ color: '#52c41a' }}>已处理</span>
+            <Button
+              type="link"
+              size="small"
+              onClick={() => {
+                setSelectedThreat(record);
+                setResolveModalVisible(true);
+              }}
+            >
+              查看
+            </Button>
+          </Space>
         ),
     },
   ];
@@ -147,6 +215,7 @@ const Threats = () => {
             onChange={(value) => setFilters((prev) => ({ ...prev, severity: value, page: 1 }))}
             allowClear
             options={[
+              { label: '严重', value: 'CRITICAL' },
               { label: '高', value: 'HIGH' },
               { label: '中', value: 'MEDIUM' },
               { label: '低', value: 'LOW' },
@@ -158,7 +227,7 @@ const Threats = () => {
             onChange={(value) => setFilters((prev) => ({ ...prev, status: value, page: 1 }))}
             allowClear
             options={[
-              { label: '待处理', value: 'PENDING' },
+              { label: '待处理', value: 'ACTIVE' },
               { label: '已处理', value: 'RESOLVED' },
             ]}
           />
@@ -172,7 +241,7 @@ const Threats = () => {
           dataSource={data?.items}
           loading={isLoading}
           rowKey="id"
-          rowClassName={(record) => (record.status === 'PENDING' ? 'pending-row' : '')}
+          rowClassName={(record) => (record.status === 'ACTIVE' ? 'pending-row' : '')}
           pagination={{
             current: filters.page,
             pageSize: filters.pageSize,
@@ -184,48 +253,38 @@ const Threats = () => {
 
       {/* 处理威胁事件对话框 */}
       <Modal
-        title="处理威胁事件"
+        title={selectedThreat?.status === 'ACTIVE' ? '处理威胁事件' : '威胁事件详情'}
         open={resolveModalVisible}
-        onOk={handleResolve}
+        onOk={selectedThreat?.status === 'ACTIVE' ? handleResolve : () => setResolveModalVisible(false)}
         onCancel={() => {
           setResolveModalVisible(false);
           setSelectedThreat(null);
           form.resetFields();
         }}
         confirmLoading={isResolving}
+        width={600}
+        footer={selectedThreat?.status === 'ACTIVE' ? undefined : [
+          <Button key="close" onClick={() => setResolveModalVisible(false)}>
+            关闭
+          </Button>
+        ]}
       >
-        {selectedThreat && (
-          <div style={{ marginBottom: 16 }}>
-            <p>
-              <strong>事件ID：</strong>
-              {selectedThreat.id}
-            </p>
-            <p>
-              <strong>设备ID：</strong>
-              {selectedThreat.deviceId}
-            </p>
-            <p>
-              <strong>威胁类型：</strong>
-              {THREAT_TYPES[selectedThreat.type]}
-            </p>
-            <p>
-              <strong>描述：</strong>
-              {selectedThreat.description}
-            </p>
-          </div>
+        {selectedThreat && <ThreatDetailContent threat={selectedThreat} />}
+
+        {selectedThreat?.status === 'ACTIVE' && (
+          <Form form={form} layout="vertical" style={{ marginTop: 24 }}>
+            <Form.Item
+              name="notes"
+              label="处理备注"
+              rules={[
+                { required: true, message: '请输入处理备注' },
+                { min: 10, message: '备注至少10个字符' },
+              ]}
+            >
+              <Input.TextArea rows={4} placeholder="请输入处理措施和备注" />
+            </Form.Item>
+          </Form>
         )}
-        <Form form={form} layout="vertical">
-          <Form.Item
-            name="notes"
-            label="处理备注"
-            rules={[
-              { required: true, message: '请输入处理备注' },
-              { min: 10, message: '备注至少10个字符' },
-            ]}
-          >
-            <Input.TextArea rows={4} placeholder="请输入处理措施和备注" />
-          </Form.Item>
-        </Form>
       </Modal>
 
       <style>{`

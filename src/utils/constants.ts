@@ -41,9 +41,9 @@ export const API_PATHS = {
     DETAIL: (id: string) => `/transactions/${id}`,
   },
   LOGS: {
-    LIST: '/logs',
-    DETAIL: (id: string) => `/logs/${id}`,
-    EXPORT: '/logs/export',
+    LIST: '/audit/logs',
+    DETAIL: (id: string) => `/audit/logs/${id}`,
+    EXPORT: '/audit/export',
   },
 } as const;
 
@@ -79,6 +79,27 @@ export const SECURITY_SCORE_LEVELS = {
 
 // 威胁类型
 export const THREAT_TYPES = {
+  // SCREAMING_SNAKE_CASE (Backend Enum serialized)
+  ROOT_DETECTION: 'Root检测',
+  BOOTLOADER_UNLOCK: 'Bootloader解锁',
+  SYSTEM_TAMPER: '系统篡改',
+  APP_TAMPER: '应用篡改',
+  TEE_COMPROMISE: 'TEE受损',
+  LOW_SECURITY_SCORE: '安全分过低',
+  CONSECUTIVE_LOW_SCORES: '连续低分',
+  OTHER: '其他',
+
+  // PascalCase (Backend Enum Display/DB?)
+  RootDetection: 'Root检测',
+  BootloaderUnlock: 'Bootloader解锁',
+  SystemTamper: '系统篡改',
+  AppTamper: '应用篡改',
+  TeeCompromise: 'TEE受损',
+  LowSecurityScore: '安全分过低',
+  ConsecutiveLowScores: '连续低分',
+  Other: '其他',
+
+  // Legacy (Old Frontend/Backend)
   Root: 'Root检测',
   Hook: 'Hook检测',
   Debug: '调试检测',
@@ -86,12 +107,14 @@ export const THREAT_TYPES = {
 } as const;
 
 export const THREAT_SEVERITY_LABELS = {
+  CRITICAL: '严重',
   HIGH: '高',
   MEDIUM: '中',
   LOW: '低',
 } as const;
 
 export const THREAT_SEVERITY_COLORS = {
+  CRITICAL: 'purple',
   HIGH: 'red',
   MEDIUM: 'orange',
   LOW: 'blue',

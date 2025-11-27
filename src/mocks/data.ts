@@ -27,6 +27,9 @@ export const mockDevices: Device[] = [
       remainingCount: 850000,
       totalCount: 1000000,
     },
+    deviceMode: 'PRODUCTION',
+    approvedAt: '2024-01-15T10:30:00Z',
+    ksn: 'FFFF9876543210E00001',
   },
   {
     id: 'device-002',
@@ -46,6 +49,9 @@ export const mockDevices: Device[] = [
       remainingCount: 950000,
       totalCount: 1000000,
     },
+    deviceMode: 'PRODUCTION',
+    approvedAt: '2024-02-20T14:15:00Z',
+    ksn: 'FFFF9876543210E00002',
   },
   {
     id: 'device-003',
@@ -65,6 +71,9 @@ export const mockDevices: Device[] = [
       remainingCount: 0,
       totalCount: 1000000,
     },
+    deviceMode: 'DEVELOPMENT',
+    approvedAt: null,
+    ksn: '',
   },
   {
     id: 'device-004',
@@ -84,6 +93,9 @@ export const mockDevices: Device[] = [
       remainingCount: 920000,
       totalCount: 1000000,
     },
+    deviceMode: 'PRODUCTION',
+    approvedAt: '2024-03-10T09:20:00Z',
+    ksn: 'FFFF9876543210E00004',
   },
   {
     id: 'device-005',
@@ -103,6 +115,9 @@ export const mockDevices: Device[] = [
       remainingCount: 880000,
       totalCount: 1000000,
     },
+    deviceMode: 'PRODUCTION',
+    approvedAt: '2024-04-05T11:30:00Z',
+    ksn: 'FFFF9876543210E00005',
   },
   {
     id: 'device-006',
@@ -122,6 +137,9 @@ export const mockDevices: Device[] = [
       remainingCount: 750000,
       totalCount: 1000000,
     },
+    deviceMode: 'PRODUCTION',
+    approvedAt: '2024-05-12T13:45:00Z',
+    ksn: 'FFFF9876543210E00006',
   },
   {
     id: 'device-007',
@@ -141,6 +159,9 @@ export const mockDevices: Device[] = [
       remainingCount: 890000,
       totalCount: 1000000,
     },
+    deviceMode: 'PRODUCTION',
+    approvedAt: '2024-06-18T15:00:00Z',
+    ksn: 'FFFF9876543210E00007',
   },
   {
     id: 'device-008',
@@ -160,6 +181,9 @@ export const mockDevices: Device[] = [
       remainingCount: 910000,
       totalCount: 1000000,
     },
+    deviceMode: 'PRODUCTION',
+    approvedAt: '2024-07-22T10:15:00Z',
+    ksn: 'FFFF9876543210E00008',
   },
 ];
 
@@ -200,28 +224,22 @@ export const mockThreats: ThreatEvent[] = [
   {
     id: 'threat-001',
     deviceId: 'device-005',
-    type: 'Root',
+    type: 'ROOT_DETECTION',
     severity: 'HIGH',
-    status: 'PENDING',
+    status: 'ACTIVE',
     detectedAt: '2024-11-17T08:30:00Z',
     description: '检测到设备已获取Root权限，存在安全风险',
-    detectionData: {
-      rootMethod: 'Magisk',
-      suBinary: '/system/xbin/su',
-    },
+
   },
   {
     id: 'threat-002',
     deviceId: 'device-006',
-    type: 'Hook',
+    type: 'APP_TAMPER',
     severity: 'HIGH',
     status: 'RESOLVED',
     detectedAt: '2024-11-15T16:20:00Z',
     description: '检测到Xposed框架，可能存在代码注入风险',
-    detectionData: {
-      framework: 'Xposed',
-      modules: ['XPrivacyLua'],
-    },
+
     resolution: {
       resolvedBy: 'admin',
       resolvedAt: '2024-11-16T09:00:00Z',
