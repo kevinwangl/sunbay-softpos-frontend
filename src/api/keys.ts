@@ -5,7 +5,7 @@ export interface KeyStatus {
   deviceId: string;
   currentKSN: string;
   remainingCount: number;
-  status: 'ACTIVE' | 'EXPIRED' | 'NEAR_EXPIRY';
+  status: 'ACTIVE' | 'EXPIRED' | 'NEAR_EXPIRY' | 'INACTIVE';
   lastUpdated: string;
   nextUpdateRequired?: string;
 }
@@ -33,6 +33,26 @@ export const getDeviceKeyStatus = async (deviceId: string): Promise<KeyStatus> =
 // 更新设备密钥
 export const updateDeviceKey = async (data: KeyUpdateRequest): Promise<KeyUpdateResponse> => {
   const response = await apiClient.post(`/keys/${data.deviceId}/update`, data);
+  return response.data;
+};
+
+// 密钥注入请求
+export interface InjectKeyRequest {
+  deviceId: string;
+}
+
+// 密钥注入响应
+export interface InjectKeyResponse {
+  deviceId: string;
+  encryptedIpek: string;
+  ksn: string;
+  injectedAt: string;
+  message: string;
+}
+
+// 注入设备密钥
+export const injectDeviceKey = async (data: InjectKeyRequest): Promise<InjectKeyResponse> => {
+  const response = await apiClient.post('/keys/inject', data);
   return response.data;
 };
 

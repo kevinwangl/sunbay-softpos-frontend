@@ -1,6 +1,6 @@
 import { Card, Button, Descriptions, Tag, Alert, Modal } from 'antd';
 import { KeyOutlined, ReloadOutlined, ExclamationCircleOutlined } from '@ant-design/icons';
-import { useDeviceKeyStatus, useKeyUpdate } from '@/hooks/useKeys';
+import { useDeviceKeyStatus, useKeyUpdate, useKeyInjection } from '@/hooks/useKeys';
 
 interface KeyManagementProps {
   deviceId: string;
@@ -9,6 +9,7 @@ interface KeyManagementProps {
 const KeyManagement: React.FC<KeyManagementProps> = ({ deviceId }) => {
   const { data: keyStatus, isLoading, refetch } = useDeviceKeyStatus(deviceId);
   const keyUpdate = useKeyUpdate();
+  const keyInjection = useKeyInjection();
 
   // 获取状态显示信息
   const getStatusDisplay = (status: string) => {
@@ -19,6 +20,8 @@ const KeyManagement: React.FC<KeyManagementProps> = ({ deviceId }) => {
         return { color: 'orange', text: '即将过期' };
       case 'EXPIRED':
         return { color: 'red', text: '已过期' };
+      case 'INACTIVE':
+        return { color: 'default', text: '未激活' };
       default:
         return { color: 'default', text: '未知' };
     }
@@ -51,6 +54,31 @@ const KeyManagement: React.FC<KeyManagementProps> = ({ deviceId }) => {
     });
   };
 
+  // 处理密钥初始化
+  const handleKeyInjection = () => {
+    Modal.confirm({
+      title: '确认密钥初始化',
+      icon: <ExclamationCircleOutlined />,
+      content: (
+        <div>
+          <p>您确定要初始化此设备的密钥吗？</p>
+          <Alert
+            message="提示"
+            description="这将为设备生成初始密钥（IPEK）。"
+            type="info"
+            showIcon
+            style={{ marginTop: 12 }}
+          />
+        </div>
+      ),
+      okText: '确认初始化',
+      cancelText: '取消',
+      onOk: () => {
+        keyInjection.mutate({ deviceId });
+      },
+    });
+  };
+
   if (isLoading) {
     return (
       <Card title="密钥管理" loading>
@@ -70,6 +98,7 @@ const KeyManagement: React.FC<KeyManagementProps> = ({ deviceId }) => {
   const statusDisplay = getStatusDisplay(keyStatus.status);
   const isNearExpiry = keyStatus.status === 'NEAR_EXPIRY';
   const isExpired = keyStatus.status === 'EXPIRED';
+  const isInactive = keyStatus.status === 'INACTIVE';
 
   return (
     <Card
@@ -84,13 +113,13 @@ const KeyManagement: React.FC<KeyManagementProps> = ({ deviceId }) => {
       {isNearExpiry && (
         <Alert
           message="密钥即将过期"
-          description={`当前密钥剩余使用次数较少（${keyStatus.remainingCount}次），建议及时更新密钥。`}
+          description={`当前密钥剩余使用次数较少（${keyStatus.remainingCount} 次），建议及时更新密钥。`}
           type="warning"
           showIcon
           style={{ marginBottom: 16 }}
         />
       )}
-      
+
       {isExpired && (
         <Alert
           message="密钥已过期"
@@ -101,10 +130,20 @@ const KeyManagement: React.FC<KeyManagementProps> = ({ deviceId }) => {
         />
       )}
 
+      {isInactive && (
+        <Alert
+          message="密钥未激活"
+          description="当前设备尚未初始化密钥，请进行密钥初始化。"
+          type="info"
+          showIcon
+          style={{ marginBottom: 16 }}
+        />
+      )}
+
       {/* 密钥状态信息 */}
       <Descriptions column={2} bordered>
         <Descriptions.Item label="当前KSN">
-          <code>{keyStatus.currentKSN}</code>
+          <code>{keyStatus.currentKSN || '-'}</code>
         </Descriptions.Item>
         <Descriptions.Item label="状态">
           <Tag color={statusDisplay.color}>{statusDisplay.text}</Tag>
@@ -126,14 +165,25 @@ const KeyManagement: React.FC<KeyManagementProps> = ({ deviceId }) => {
 
       {/* 操作按钮 */}
       <div className="mt-4">
-        <Button
-          type="primary"
-          icon={<KeyOutlined />}
-          onClick={handleKeyUpdate}
-          loading={keyUpdate.isPending}
-        >
-          更新密钥
-        </Button>
+        {isInactive ? (
+          <Button
+            type="primary"
+            icon={<KeyOutlined />}
+            onClick={handleKeyInjection}
+            loading={keyInjection.isPending}
+          >
+            初始化密钥
+          </Button>
+        ) : (
+          <Button
+            type="primary"
+            icon={<KeyOutlined />}
+            onClick={handleKeyUpdate}
+            loading={keyUpdate.isPending}
+          >
+            更新密钥
+          </Button>
+        )}
       </div>
     </Card>
   );

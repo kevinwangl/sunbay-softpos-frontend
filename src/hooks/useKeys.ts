@@ -3,9 +3,12 @@ import { message } from 'antd';
 import {
   getDeviceKeyStatus,
   updateDeviceKey,
+  injectDeviceKey,
   getKeyWarningDevices,
   type KeyUpdateRequest,
   type KeyUpdateResponse,
+  type InjectKeyRequest,
+  type InjectKeyResponse,
 } from '@/api/keys';
 
 // 获取设备密钥状态
@@ -34,6 +37,24 @@ export const useKeyUpdate = () => {
     },
     onError: (error: any) => {
       message.error(`密钥更新失败: ${error.message || '未知错误'}`);
+    },
+  });
+};
+
+// 密钥注入
+export const useKeyInjection = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (data: InjectKeyRequest) => injectDeviceKey(data),
+    onSuccess: (data: InjectKeyResponse, variables) => {
+      message.success(`密钥注入成功！KSN: ${data.ksn}`);
+      // 刷新相关查询
+      queryClient.invalidateQueries({ queryKey: ['device-key-status', variables.deviceId] });
+      queryClient.invalidateQueries({ queryKey: ['device', variables.deviceId] });
+    },
+    onError: (error: any) => {
+      message.error(`密钥注入失败: ${error.message || '未知错误'}`);
     },
   });
 };
