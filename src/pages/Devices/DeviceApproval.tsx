@@ -189,6 +189,9 @@ const DeviceApproval = () => {
               <Descriptions.Item label="设备型号">{selectedDevice.model}</Descriptions.Item>
               <Descriptions.Item label="操作系统">{selectedDevice.osVersion}</Descriptions.Item>
               <Descriptions.Item label="TEE类型">{selectedDevice.teeType}</Descriptions.Item>
+              <Descriptions.Item label="NFC支持">
+                {selectedDevice.nfcPresent ? '✓ 支持' : '✗ 不支持'}
+              </Descriptions.Item>
               <Descriptions.Item label="商户ID">{selectedDevice.merchantId}</Descriptions.Item>
               <Descriptions.Item label="商户名称" span={2}>
                 {selectedDevice.merchantName}

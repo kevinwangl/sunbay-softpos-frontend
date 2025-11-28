@@ -43,6 +43,7 @@ export const devicesApi = {
         registeredAt: device.registered_at,
         approvedAt: device.approved_at,
         lastActiveAt: device.registered_at, // Use registered_at as fallback for now
+        nfcPresent: device.nfc_present || false,
       })),
       total: apiData.total,
       page: filters.page || 1,
@@ -79,6 +80,7 @@ export const devicesApi = {
       registeredAt: apiDevice.registered_at,
       approvedAt: apiDevice.approved_at,
       lastActiveAt: apiDevice.registered_at, // Use registered_at as fallback for now
+      nfcPresent: apiDevice.nfc_present || false,
     };
 
     return {

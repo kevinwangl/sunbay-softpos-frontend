@@ -17,6 +17,7 @@ export interface Device {
   lastActiveAt: string;
   ksn: string;
   keyInfo: KeyInfo;
+  nfcPresent: boolean;
 }
 
 export interface KeyInfo {

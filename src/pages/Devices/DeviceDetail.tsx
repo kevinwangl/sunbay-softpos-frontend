@@ -152,6 +152,9 @@ const DeviceDetail = () => {
           <Descriptions.Item label="设备型号">{device.model}</Descriptions.Item>
           <Descriptions.Item label="操作系统">{device.osVersion}</Descriptions.Item>
           <Descriptions.Item label="TEE类型">{device.teeType}</Descriptions.Item>
+          <Descriptions.Item label="NFC支持">
+            {device.nfcPresent ? '✓ 支持' : '✗ 不支持'}
+          </Descriptions.Item>
           <Descriptions.Item label="设备状态">
             <StatusBadge status={device.status} />
           </Descriptions.Item>
@@ -167,8 +170,8 @@ const DeviceDetail = () => {
       </Card>
 
       {/* 安全评分详情 */}
-      <SecurityScoreDetail 
-        score={device.securityScore} 
+      <SecurityScoreDetail
+        score={device.securityScore}
         healthCheck={data.recentHealthChecks?.[0]}
       />
 
