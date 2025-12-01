@@ -7,27 +7,28 @@ export const transactionsApi = {
   getTransactions: async (
     filters: TransactionFilters
   ): Promise<PaginatedResponse<Transaction>> => {
-    const response = await apiClient.get<ApiResponse<{ transactions: any[]; total: number }>>(
+    const response = await apiClient.get<{ items: any[]; total: number }>(
       API_PATHS.TRANSACTIONS.LIST,
       { params: filters }
     );
 
-    // Transform API response (snake_case) to frontend format (camelCase)
-    const apiData = response.data.data;
+    // 后端现在直接返回 {items, total}，字段已经是 camelCase
+    const apiData = response.data;
     return {
-      items: apiData.transactions.map((tx: any) => ({
+      items: apiData.items.map((tx: any) => ({
         id: tx.id,
-        deviceId: tx.device_id,
-        type: tx.transaction_type,
+        deviceId: tx.deviceId,
+        type: tx.type,
         amount: tx.amount,
         currency: tx.currency,
         status: tx.status,
-        authCode: tx.authorization_code,
-        timestamp: tx.created_at,
-        healthCheckId: tx.health_check_id || '',
-        securityScore: tx.security_score || 0,
-        errorMessage: tx.error_message,
-        errorCode: tx.error_code,
+        authCode: tx.authCode,
+        timestamp: tx.timestamp,
+        cardNumberMasked: tx.cardNumberMasked,
+        healthCheckId: tx.healthCheckId || '',
+        securityScore: tx.securityScore || 0,
+        errorMessage: tx.errorMessage,
+        errorCode: tx.errorCode,
       })),
       total: apiData.total,
       page: filters.page || 1,
@@ -37,9 +38,25 @@ export const transactionsApi = {
 
   // 获取交易详情
   getTransactionById: async (id: string): Promise<Transaction> => {
-    const response = await apiClient.get<ApiResponse<Transaction>>(
+    const response = await apiClient.get<any>(
       API_PATHS.TRANSACTIONS.DETAIL(id)
     );
-    return response.data.data;
+    // 后端直接返回 TransactionResponse，字段已经是 camelCase
+    const tx = response.data;
+    return {
+      id: tx.id,
+      deviceId: tx.deviceId,
+      type: tx.type,
+      amount: tx.amount,
+      currency: tx.currency,
+      status: tx.status,
+      authCode: tx.authCode,
+      timestamp: tx.timestamp,
+      cardNumberMasked: tx.cardNumberMasked,
+      healthCheckId: tx.healthCheckId || '',
+      securityScore: tx.securityScore || 0,
+      errorMessage: tx.errorMessage,
+      errorCode: tx.errorCode,
+    };
   },
 };

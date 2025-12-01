@@ -29,6 +29,11 @@ const Transactions = () => {
       key: 'id',
       width: 150,
       fixed: 'left',
+      render: (id) => (
+        <a onClick={() => window.location.href = `/transactions/${id}`}>
+          {id}
+        </a>
+      ),
     },
     {
       title: '设备ID',
