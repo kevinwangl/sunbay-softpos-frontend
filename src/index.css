@@ -263,3 +263,31 @@ body {
 .ant-layout-sider-children {
   border-right: none !important;
 }
+
+/* 位置地图 Tooltip 样式 */
+.location-tooltip .ant-tooltip-inner {
+  background: rgba(0, 0, 0, 0.92);
+  color: #fff;
+  padding: 16px;
+  border-radius: 8px;
+  font-size: 13px;
+  max-width: 332px;
+  width: 332px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+  overflow: hidden;
+}
+
+.location-tooltip .ant-tooltip-arrow::before {
+  background: rgba(0, 0, 0, 0.92);
+}
+
+/* 确保地图容器不超出 */
+.location-tooltip .ant-tooltip-inner > div {
+  max-width: 100%;
+  overflow: hidden;
+}
+
+.location-tooltip .ant-tooltip-inner iframe {
+  border-radius: 6px;
+  max-width: 100%;
+}

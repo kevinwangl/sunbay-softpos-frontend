@@ -14,6 +14,12 @@ export interface Transaction {
   securityScore: number;
   errorCode?: string;
   errorMessage?: string;
+  cardNumberMasked?: string;
+  clientIp?: string;
+  latitude?: number;
+  longitude?: number;
+  locationAccuracy?: number;
+  locationTimestamp?: string;
 }
 
 export interface TransactionFilters {

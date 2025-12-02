@@ -1,6 +1,6 @@
 import { useState } from 'react';
-import { Card, Input, Select, Button, Space, Tag, DatePicker } from 'antd';
-import { SearchOutlined, ReloadOutlined } from '@ant-design/icons';
+import { Card, Input, Select, Button, Space, Tag, DatePicker, Tooltip } from 'antd';
+import { SearchOutlined, ReloadOutlined, EnvironmentOutlined, GlobalOutlined } from '@ant-design/icons';
 import { DataTable } from '@/components/common/DataTable';
 import { SecurityScore } from '@/components/common/SecurityScore';
 import { useTransactions } from '@/hooks/useTransactions';
@@ -79,6 +79,121 @@ const Transactions = () => {
       key: 'securityScore',
       width: 150,
       render: (score) => <SecurityScore score={score} />,
+    },
+    {
+      title: 'IP地址',
+      dataIndex: 'clientIp',
+      key: 'clientIp',
+      width: 140,
+      render: (ip) =>
+        ip ? (
+          <Tooltip 
+            title={ip}
+            overlayStyle={{
+              maxWidth: 400,
+            }}
+            overlayInnerStyle={{
+              backgroundColor: 'rgba(0, 0, 0, 0.85)',
+              color: '#fff',
+              padding: '8px 12px',
+              borderRadius: '6px',
+              fontSize: '13px',
+            }}
+          >
+            <Space size={4}>
+              <GlobalOutlined style={{ color: '#1890ff', fontSize: 12 }} />
+              <span style={{ fontSize: 12 }}>{ip}</span>
+            </Space>
+          </Tooltip>
+        ) : (
+          '-'
+        ),
+    },
+    {
+      title: '位置',
+      dataIndex: 'latitude',
+      key: 'location',
+      width: 80,
+      align: 'center',
+      render: (_, record) => {
+        if (record.latitude && record.longitude) {
+          // 使用 Google Maps 嵌入式地图（无需 API Key）
+          const googleMapsEmbedUrl = `https://maps.google.com/maps?q=${record.latitude},${record.longitude}&t=&z=15&ie=UTF8&iwloc=&output=embed`;
+          
+          return (
+            <Tooltip
+              title={
+                <div>
+                  {/* Google Maps 嵌入式地图预览 */}
+                  <div
+                    style={{
+                      width: 300,
+                      height: 200,
+                      marginBottom: 12,
+                      borderRadius: 6,
+                      overflow: 'hidden',
+                      border: '1px solid rgba(255, 255, 255, 0.1)',
+                    }}
+                  >
+                    <iframe
+                      src={googleMapsEmbedUrl}
+                      width="300"
+                      height="200"
+                      style={{ border: 0, display: 'block' }}
+                      loading="lazy"
+                      referrerPolicy="no-referrer-when-downgrade"
+                      title="地图位置"
+                    />
+                  </div>
+                  
+                  {/* 位置信息 */}
+                  <div style={{ fontSize: 13, lineHeight: '1.8' }}>
+                    <div>
+                      <span style={{ opacity: 0.7 }}>纬度: </span>
+                      <span style={{ fontFamily: 'monospace' }}>{record.latitude.toFixed(6)}°</span>
+                    </div>
+                    <div>
+                      <span style={{ opacity: 0.7 }}>经度: </span>
+                      <span style={{ fontFamily: 'monospace' }}>{record.longitude.toFixed(6)}°</span>
+                    </div>
+                    {record.locationAccuracy && (
+                      <div>
+                        <span style={{ opacity: 0.7 }}>精度: </span>
+                        <span>±{record.locationAccuracy.toFixed(1)}米</span>
+                      </div>
+                    )}
+                  </div>
+                  
+                  {/* 提示信息 */}
+                  <div style={{ 
+                    textAlign: 'center', 
+                    fontSize: 11, 
+                    opacity: 0.5,
+                    marginTop: 8,
+                  }}>
+                    点击图标打开完整地图
+                  </div>
+                </div>
+              }
+              color="rgba(0, 0, 0, 0.92)"
+              overlayClassName="location-tooltip"
+            >
+              <EnvironmentOutlined
+                style={{ color: '#52c41a', fontSize: 16, cursor: 'pointer' }}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  // 打开 Google Maps
+                  window.open(
+                    `https://www.google.com/maps?q=${record.latitude},${record.longitude}`,
+                    '_blank'
+                  );
+                }}
+              />
+            </Tooltip>
+          );
+        }
+        return '-';
+      },
     },
     {
       title: '交易时间',

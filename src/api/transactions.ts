@@ -29,6 +29,11 @@ export const transactionsApi = {
         securityScore: tx.securityScore || 0,
         errorMessage: tx.errorMessage,
         errorCode: tx.errorCode,
+        clientIp: tx.clientIp,
+        latitude: tx.latitude,
+        longitude: tx.longitude,
+        locationAccuracy: tx.locationAccuracy,
+        locationTimestamp: tx.locationTimestamp,
       })),
       total: apiData.total,
       page: filters.page || 1,
@@ -57,6 +62,11 @@ export const transactionsApi = {
       securityScore: tx.securityScore || 0,
       errorMessage: tx.errorMessage,
       errorCode: tx.errorCode,
+      clientIp: tx.clientIp,
+      latitude: tx.latitude,
+      longitude: tx.longitude,
+      locationAccuracy: tx.locationAccuracy,
+      locationTimestamp: tx.locationTimestamp,
     };
   },
 };
