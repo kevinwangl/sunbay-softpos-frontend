@@ -30,6 +30,7 @@ export const mockDevices: Device[] = [
     deviceMode: 'PRODUCTION',
     approvedAt: '2024-01-15T10:30:00Z',
     ksn: 'FFFF9876543210E00001',
+    nfcPresent: true,
   },
   {
     id: 'device-002',
@@ -52,6 +53,7 @@ export const mockDevices: Device[] = [
     deviceMode: 'PRODUCTION',
     approvedAt: '2024-02-20T14:15:00Z',
     ksn: 'FFFF9876543210E00002',
+    nfcPresent: true,
   },
   {
     id: 'device-003',
@@ -74,6 +76,7 @@ export const mockDevices: Device[] = [
     deviceMode: 'DEVELOPMENT',
     approvedAt: null,
     ksn: '',
+    nfcPresent: true,
   },
   {
     id: 'device-004',
@@ -96,6 +99,7 @@ export const mockDevices: Device[] = [
     deviceMode: 'PRODUCTION',
     approvedAt: '2024-03-10T09:20:00Z',
     ksn: 'FFFF9876543210E00004',
+    nfcPresent: true,
   },
   {
     id: 'device-005',
@@ -118,6 +122,7 @@ export const mockDevices: Device[] = [
     deviceMode: 'PRODUCTION',
     approvedAt: '2024-04-05T11:30:00Z',
     ksn: 'FFFF9876543210E00005',
+    nfcPresent: true,
   },
   {
     id: 'device-006',
@@ -140,6 +145,7 @@ export const mockDevices: Device[] = [
     deviceMode: 'PRODUCTION',
     approvedAt: '2024-05-12T13:45:00Z',
     ksn: 'FFFF9876543210E00006',
+    nfcPresent: false,
   },
   {
     id: 'device-007',
@@ -162,6 +168,7 @@ export const mockDevices: Device[] = [
     deviceMode: 'PRODUCTION',
     approvedAt: '2024-06-18T15:00:00Z',
     ksn: 'FFFF9876543210E00007',
+    nfcPresent: true,
   },
   {
     id: 'device-008',
@@ -184,6 +191,7 @@ export const mockDevices: Device[] = [
     deviceMode: 'PRODUCTION',
     approvedAt: '2024-07-22T10:15:00Z',
     ksn: 'FFFF9876543210E00008',
+    nfcPresent: true,
   },
 ];
 

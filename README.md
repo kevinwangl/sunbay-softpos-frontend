@@ -1,6 +1,6 @@
-# SUNBAY SoftPOS 管理平台
+# SUNBAY SoftPOS鉴证管理平台
 
-SUNBAY SoftPOS A/M-Backend管理平台前端是一个Web管理界面，为ISO/收单机构和系统管理员提供设备生命周期管理、实时健康监控、威胁检测和交易查询等功能。
+SUNBAY SoftPOS A/M-Backend鉴证管理平台前端是一个Web管理界面，为ISO/收单机构和系统管理员提供设备生命周期管理、实时健康监控、威胁检测和交易查询等功能。
 
 ## ✨ 核心功能
 

@@ -121,7 +121,7 @@ const Header = () => {
         borderBottom: '1px solid #f0f0f0',
       }}
     >
-      <div style={{ fontSize: '18px', fontWeight: 'bold' }}>SUNBAY SoftPOS 管理平台</div>
+      <div style={{ fontSize: '18px', fontWeight: 'bold' }}>SUNBAY SoftPOS鉴证管理平台</div>
       <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
         <Dropdown
           menu={{ items: notificationMenuItems }}

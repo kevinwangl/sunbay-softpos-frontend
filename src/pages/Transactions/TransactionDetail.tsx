@@ -5,7 +5,7 @@ import { useQuery } from '@tanstack/react-query';
 import { transactionsApi } from '@/api/transactions';
 import { TRANSACTION_TYPES, TRANSACTION_STATUS_LABELS, TRANSACTION_STATUS_COLORS } from '@/utils/constants';
 
-const { Text, Link } = Typography;
+const { Text } = Typography;
 
 const TransactionDetail = () => {
   const { id } = useParams<{ id: string }>();
@@ -78,18 +78,6 @@ const TransactionDetail = () => {
               {TRANSACTION_STATUS_LABELS[transaction.status as keyof typeof TRANSACTION_STATUS_LABELS]}
             </Tag>
           </Descriptions.Item>
-
-          {transaction.cardNumberMasked && (
-            <Descriptions.Item label="卡号" span={2}>
-              {transaction.cardNumberMasked}
-            </Descriptions.Item>
-          )}
-
-          {transaction.authCode && (
-            <Descriptions.Item label="授权码">
-              {transaction.authCode}
-            </Descriptions.Item>
-          )}
 
           <Descriptions.Item label="安全评分">
             {transaction.securityScore || '-'}

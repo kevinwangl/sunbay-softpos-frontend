@@ -1,6 +1,6 @@
 import apiClient from './client';
 import { API_PATHS } from '@/utils/constants';
-import { Transaction, TransactionFilters, PaginatedResponse, ApiResponse } from '@/types';
+import { Transaction, TransactionFilters, PaginatedResponse } from '@/types';
 
 export const transactionsApi = {
   // 获取交易列表

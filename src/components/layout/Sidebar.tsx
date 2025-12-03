@@ -41,7 +41,7 @@ const Sidebar = () => {
     {
       key: '/transactions',
       icon: <TransactionOutlined />,
-      label: '交易记录',
+      label: '鉴证记录',
     },
     {
       key: '/logs',

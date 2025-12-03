@@ -66,13 +66,7 @@ const Transactions = () => {
         </Tag>
       ),
     },
-    {
-      title: '授权码',
-      dataIndex: 'authCode',
-      key: 'authCode',
-      width: 120,
-      render: (code) => code || '-',
-    },
+
     {
       title: '安全评分',
       dataIndex: 'securityScore',

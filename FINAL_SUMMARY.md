@@ -1,4 +1,4 @@
-# SUNBAY SoftPOS 管理平台 - 完成总结
+# SUNBAY SoftPOS鉴证管理平台 - 完成总结
 
 ## 🎉 项目完成情况
 
