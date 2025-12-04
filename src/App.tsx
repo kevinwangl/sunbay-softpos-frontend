@@ -18,6 +18,7 @@ const TransactionDetail = lazy(() => import('@/pages/Transactions/TransactionDet
 const Logs = lazy(() => import('@/pages/LogsPage'));
 const VersionList = lazy(() => import('@/pages/SDKVersions/VersionList'));
 const VersionDetail = lazy(() => import('@/pages/SDKVersions/VersionDetail'));
+const KernelList = lazy(() => import('@/pages/Kernels'));
 
 // Loading组件
 const PageLoading = () => (
@@ -135,6 +136,14 @@ const router = createBrowserRouter([
         element: (
           <Suspense fallback={<PageLoading />}>
             <VersionDetail />
+          </Suspense>
+        ),
+      },
+      {
+        path: 'kernels',
+        element: (
+          <Suspense fallback={<PageLoading />}>
+            <KernelList />
           </Suspense>
         ),
       },

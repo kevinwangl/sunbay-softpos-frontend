@@ -6,3 +6,4 @@ export * from './transaction';
 export * from './log';
 export * from './api';
 export * from './notification';
+export * from './kernel';

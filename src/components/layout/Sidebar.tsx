@@ -7,6 +7,7 @@ import {
   TransactionOutlined,
   FileTextOutlined,
   AppstoreOutlined,
+  CodeOutlined,
 } from '@ant-design/icons';
 
 const Sidebar = () => {
@@ -32,6 +33,11 @@ const Sidebar = () => {
       key: '/sdk-versions',
       icon: <AppstoreOutlined />,
       label: 'SDK版本管理',
+    },
+    {
+      key: '/kernels',
+      icon: <CodeOutlined />,
+      label: '内核管理',
     },
     {
       key: '/threats',
